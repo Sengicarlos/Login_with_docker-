@@ -1,0 +1,15 @@
+body{
+    background: crimson;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;  
+}
+*{
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+h2{
+    text-align: center;
+    margin-bottom: 40px;
+}
