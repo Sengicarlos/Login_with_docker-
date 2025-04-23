@@ -1,46 +1,52 @@
 <?php
 session_start();
 include "db_conn.php";
-if(isset($_POST['uname']) && isset($_POST['password'])){
-    function validate($data){
+
+if (isset($_POST['uname']) && isset($_POST['password'])) {
+
+    function validate($data): string {
         $data = trim($data);
         $data = stripslashes($data);
         $data = htmlspecialchars($data);
         return $data;
     }
+
     $uname = validate($_POST['uname']);
     $password = validate($_POST['password']);
 
-    if(empty($uname)){
-        header("location:index.php?error=User Name is required");
+    if (empty($uname)) {
+        header("Location: index.php?error=User Name is required");
         exit();
-    }else if(empty(($pass))){
-        header("location:index.php?error=Password is required");
+    } elseif (empty($password)) {
+        header("Location: index.php?error=Password is required");
         exit();
-    }else{
-        $sql = "SELECT * FROM users WHERE user_name='$uname' AND password='$password'";
+    } else {
+        // Use prepared statements for security
+        $stmt = $conn->prepare("SELECT * FROM users WHERE user_name = ?");
+        $stmt->bind_param("s", $uname);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        $result = mysqli_query($conn,$sql);
+        if ($result->num_rows === 1) {
+            $row = $result->fetch_assoc();
 
-        if(mysqli_num_rows($result)=== 1){
-            $row = mysqli_fetch_assoc($result);
-
-            if($row['user_name']=== $uname && $row['password']=== $password){
-                $_SESSION['user_name'] === $row['user_name'];
-                $_SESSION['name'] === $row['name'];
-                $_SESSION['id'] === $row['id'];
-                header("location:Home.php");
+            // Plaintext password check (for demo only; use password_hash in real apps)
+            if ($row['user_name'] === $uname && $row['password'] === $password) {
+                $_SESSION['user_name'] = $row['user_name'];
+                $_SESSION['name'] = $row['name'];
+                $_SESSION['id'] = $row['id'];
+                header("Location: Home.php");
                 exit();
-            }else{
-                header("location:index.php?error=Incorrect User name or password");
+            } else {
+                header("Location: index.php?error=Incorrect username or password");
                 exit();
             }
-         }else{
-            header("location:index.php?error=Incorrect User name or password");
-        exit();
-         }
+        } else {
+            header("Location: index.php?error=Incorrect username or password");
+            exit();
+        }
     }
-}else{
-    header("location:index.php?error");
+} else {
+    header("Location: index.php?error=Invalid request");
     exit();
 }
