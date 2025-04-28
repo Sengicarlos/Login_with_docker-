@@ -1,5 +1,5 @@
 body{
-    background: crimson;
+    background: brown;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,6 +14,7 @@ form {
     border:2px solid #ccc;
     padding: 30px;
     background: #fff;
+    border: 2px double rgb(68, 9, 9);
     border-radius:15px ;
 }
 h1{
